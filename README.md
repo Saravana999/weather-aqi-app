@@ -56,4 +56,4 @@ This project is open-source and free to use!
 
 
 📌 Live Demo
-🔗 Weather & AQI App
+🔗 Weather & AQI App https://weather-aqi-app.onrender.com
