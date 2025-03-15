@@ -25,7 +25,8 @@ def index():
     pollution_data = None
     temperature_forecast = None
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'city' in request.form:
+
         city = request.form['city']
         country_code = "IN"  
 
@@ -38,6 +39,9 @@ def index():
             lat, lon = location['lat'], location['lon']
 
             # API for Weather & Pollution Data
+            if not city:
+                return render_template('index.html', error="Please enter a city name.")
+
             weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
             pollution_url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
 
@@ -46,8 +50,16 @@ def index():
 
             if weather_response.status_code == 200:
                 weather_data = weather_response.json()
+            else:
+                weather_data = {"error": "Weather data not available."}
+
+                weather_data = weather_response.json()
 
             if pollution_response.status_code == 200:
+                pollution_data = pollution_response.json()
+            else:
+                pollution_data = {"error": "Pollution data not available."}
+
                 pollution_data = pollution_response.json()
 
             # API for Temperature Forecast (Hourly)
@@ -56,6 +68,10 @@ def index():
             forecast_response = requests.get(forecast_url)
 
             if forecast_response.status_code == 200:
+                temperature_forecast = forecast_response.json()
+            else:
+                temperature_forecast = {"error": "Temperature forecast not available."}
+
                 temperature_forecast = forecast_response.json()
 
     return render_template('index.html', weather_data=weather_data, pollution_data=pollution_data, temperature_forecast=temperature_forecast)
